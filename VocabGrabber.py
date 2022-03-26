@@ -1,31 +1,33 @@
-# importing sys
-# from pdf_OCR import pdf_ocr
+import sys
+sys.path.insert(0, "C:\\projects\\helpers\\")
+from pdf_OCR import pdf_ocr
+import os
 
-# # recongnise text from pdf files
-# pdf_ocr("C:\\Users\\Bec\\OneDrive - Department of Education and Training\\French Resources\\APLUS1\\", "fra")
+DIR = "C:\\Users\\Bec\\OneDrive - Department of Education and Training\\French Resources\\APLUS1\\"
 
-# # TODO store lemma list with frequency info
-# # if lemma already in file, add to freq.
+pdf_ocr(DIR, "fra")
 
-with open("A+1U1.txt", "r") as file:
-    data = "".join((x.strip() for x in file.readlines()))
+for textfile in (file for file in os.listdir(DIR) if file.endswith(".txt")):
+    print(textfile)
+    with open(DIR+textfile, "r") as file:
+        data = " ".join((x.strip() for x in file.readlines()))
 
-# TODO Lemmatize text
-import spacy
+    # Lemmatize text
+    import spacy
+    nlp = spacy.load("fr_dep_news_trf")
+    doc = nlp(data)
 
-nlp = spacy.load("fr_dep_news_trf")
-doc = nlp(data)
-
-words={}
-for w in doc:
-    if w.lemma not in words:
-        words[w.lemma] = (w.pos_, 1)
-    else:
-        freq = words[w.lemma][1]
-        words[w.lemma] = (w.pos_, freq+1)
-
-with open("words.txt", "a") as outfile:
-    for key, value in words.items():
-        outfile.write('%s:%s\n' % (key, value))
+    # Create frequency dictionary
+    words={}
+    for w in doc:
+        if w.lemma_ not in words.keys():
+            words[w.lemma_] = (w.pos_, 1)
+        else:
+            freq = words[w.lemma_][1]
+            words[w.lemma_] = (w.pos_, freq+1)
+        filename = textfile[:-4]
+    with open("{}\\{}words.txt".format(DIR,filename), "a") as outfile:
+        for key, value in words.items():
+            outfile.write('%s:%s\n' % (key, value))
 
 
