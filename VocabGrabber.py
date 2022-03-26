@@ -5,12 +5,15 @@ import os
 
 DIR = "C:\\Users\\Bec\\OneDrive - Department of Education and Training\\French Resources\\APLUS1\\"
 
+# extract text from pdf files in DIR
 pdf_ocr(DIR, "fra")
 
+# create string from textfiles in DIR
 for textfile in (file for file in os.listdir(DIR) if file.endswith(".txt")):
     print(textfile)
+    # get clean string with no newline characters from textfile
     with open(DIR+textfile, "r") as file:
-        data = " ".join((x.strip() for x in file.readlines()))
+        data = " ".join((x.strip() for x in file.readlines())).lower()
 
     # Lemmatize text
     import spacy
@@ -18,16 +21,20 @@ for textfile in (file for file in os.listdir(DIR) if file.endswith(".txt")):
     doc = nlp(data)
 
     # Create frequency dictionary
-    words={}
+    words = {}
     for w in doc:
         if w.lemma_ not in words.keys():
             words[w.lemma_] = (w.pos_, 1)
         else:
             freq = words[w.lemma_][1]
             words[w.lemma_] = (w.pos_, freq+1)
-        filename = textfile[:-4]
-    with open("{}\\{}words.txt".format(DIR,filename), "a") as outfile:
+
+    # Write dictionary to csv
+    import csv
+    filename = textfile[:-4]
+    with open("{}\\{}words.csv".format(DIR, filename), "w", newline="") as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerow(["lemma", "POS", "FREQ"])
         for key, value in words.items():
-            outfile.write('%s:%s\n' % (key, value))
-
-
+            if value[0] not in ["SPACE", "PUNCT", "X", "SYM"]:
+                writer.writerow([key, value[0], value[1]])
