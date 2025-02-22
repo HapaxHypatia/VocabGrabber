@@ -3,7 +3,7 @@ sys.path.insert(0, "C:\\projects\\helpers\\")
 from pdf_OCR import pdf_ocr
 import os
 
-DIR = "C:\\Users\\Bec\\OneDrive - Department of Education and Training\\French Resources\\APLUS1\\"
+DIR = "French Resources\\APLUS1\\"
 
 # extract text from pdf files in DIR
 pdf_ocr(DIR, "fra")
